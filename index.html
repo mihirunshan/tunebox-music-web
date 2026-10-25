@@ -1,41 +1,170 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TuneBox — Music for your mood</title><link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><span class="brand-mark">♫</span><span>TuneBox</span></div>
-    <nav><button class="nav active" data-view="home">⌂ <span>Home</span></button><button class="nav" data-view="search">⌕ <span>Search</span></button></nav>
-    <section class="library">
-      <div class="library-head"><span>▤ Your Library</span><button id="newPlaylist" title="Create playlist">＋</button></div>
-      <div class="library-prompt"><strong>Create your first playlist</strong><p>Build a collection for every mood.</p><button id="createPlaylist">Create playlist</button></div>
-      <div id="playlistList" class="playlist-list"></div>
-      <div class="side-note">Personal music space · Playback is provided by YouTube.</div>
-    </section>
-  </aside>
-  <main class="main">
-    <header class="topbar"><div class="history"><button id="backBtn">‹</button><button id="forwardBtn">›</button></div><div class="search-wrap"><span>⌕</span><input id="searchInput" placeholder="What do you want to play?" autocomplete="off"><button id="searchBtn">Search</button></div><button id="settingsBtn" class="settings-btn">⚙ Settings</button></header>
-    <div class="content" id="homeView">
-      <section class="hero"><div><p class="eyebrow">YOUR SOUND, YOUR SPACE</p><h1>Find your<br><em>next favourite.</em></h1><p>Search YouTube music videos and keep your listening queue in one place.</p><button id="heroSearch">Explore music <span>→</span></button></div><div class="hero-orb"><div class="orb-ring"></div><div class="orb-note">♫</div><span class="orb-dot dot1"></span><span class="orb-dot dot2"></span><span class="orb-dot dot3"></span></div></section>
-      <section class="section"><div class="section-title"><div><h2>Quick picks</h2><p>Start with a search, then add tracks to your queue.</p></div></div><div id="quickPicks" class="quick-grid"><div class="empty-card"><span>♫</span><b>Your next song starts here</b><small>Search an artist, song, or album above.</small></div></div></section>
-      <section class="section"><div class="section-title"><div><h2>Made for your mood</h2><p>Choose a search to get started.</p></div></div><div class="mood-grid"><button data-query="chill music mix">☁ <span>Chill</span></button><button data-query="lofi beats">◉ <span>Lo-fi</span></button><button data-query="pop hits">✦ <span>Pop</span></button><button data-query="instrumental music">♬ <span>Instrumental</span></button></div></section>
-    </div>
-    <div class="content hidden" id="searchView"><div class="section-title search-heading"><div><p class="eyebrow">DISCOVER</p><h2 id="resultsHeading">Search tracks</h2><p id="resultsSub">Search YouTube for music videos.</p></div></div><div id="results" class="track-list"><div class="search-empty">⌕<p>Search for a song, artist, or genre.</p></div></div></div>
-    <div class="content hidden" id="playlistView"><div class="playlist-hero"><div class="playlist-cover">♫</div><div><p class="eyebrow">PLAYLIST</p><h1 id="playlistTitle">My Playlist</h1><p id="playlistMeta">Your saved tracks</p></div></div><div id="playlistTracks" class="track-list"></div></div>
-    <footer class="footer">TuneBox is an independent personal project and is not affiliated with Spotify or YouTube.</footer>
-  </main>
-</div>
-<div class="player-bar">
-  <div class="now-playing"><div id="currentThumb" class="mini-cover">♫</div><div class="now-text"><strong id="currentTitle">Nothing playing</strong><span id="currentArtist">Choose a track to begin</span></div><button id="likeBtn" title="Save current track">♡</button></div>
-  <div class="player-center"><div class="player-controls"><button id="shuffleBtn" title="Shuffle">⤨</button><button id="prevBtn" title="Previous">◀|</button><button id="playBtn" class="play-btn" title="Play/Pause">▶</button><button id="nextBtn" title="Next">|▶</button><button id="repeatBtn" title="Repeat">↻</button></div><div class="timeline"><span id="elapsed">0:00</span><input id="seekBar" type="range" min="0" max="1000" value="0"><span id="duration">0:00</span></div></div>
-  <div class="player-extra"><button id="queueToggle" title="Queue">☷ Queue</button><span>🔊</span><input id="volumeBar" type="range" min="0" max="100" value="75"></div>
-</div>
-<aside id="queuePanel" class="queue-panel"><div class="queue-head"><div><p class="eyebrow">UP NEXT</p><h3>Queue</h3></div><button id="closeQueue">×</button></div><div id="queueList"></div><div class="queue-actions"><button id="clearQueue">Clear queue</button></div></aside>
-<div id="settingsModal" class="modal hidden"><div class="modal-card"><button id="closeSettings" class="modal-close">×</button><p class="eyebrow">SETUP</p><h2>YouTube API settings</h2><p class="modal-copy">Paste your YouTube Data API v3 key. It is saved only in this browser on this device. Do not share the key or publish this folder with your key included.</p><label for="apiKey">API key</label><input id="apiKey" type="password" placeholder="Paste API key here"><div class="modal-actions"><button id="saveKey">Save key</button><button id="removeKey" class="secondary">Remove</button></div><p id="settingsStatus" class="status"></p><small>Video playback uses the official YouTube embedded player. Some videos may be unavailable for embedding.</small></div></div>
-<div id="toast" class="toast"></div>
-<div id="ytPlayerHost" aria-hidden="true"></div>
-<script src="app.js"></script><script src="https://www.youtube.com/iframe_api"></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyTunes</title>
+<style>
+:root{--e:#121212;--h:#2a2a2a;--m:#b3b3b3;--g:#1ed760}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px system-ui,-apple-system,"Segoe UI",sans-serif;background:#000;color:#fff;height:100vh;display:grid;grid-template:"s m r" 1fr "p p p" 80px/240px 1fr 340px;gap:8px;padding:8px;overflow:hidden}
+body.nor{grid-template-columns:240px 1fr 0}body.nor #r{display:none}
+#s,#main,#r{background:var(--e);border-radius:8px;overflow:auto;padding:14px}
+#s{grid-area:s}#main{grid-area:m;background:linear-gradient(#2c2c2c,var(--e) 260px)}#r{grid-area:r}
+button{background:none;border:0;color:var(--m);cursor:pointer;font-size:17px;padding:6px 8px;border-radius:50%}
+button:hover{color:#fff}button.on{color:var(--g)}button:focus-visible,input:focus-visible{outline:2px solid var(--g)}
+.logo{font-size:22px;font-weight:800;padding:6px 8px 16px;color:var(--g)}
+.nav a,.pl a{display:block;padding:9px 8px;border-radius:6px;color:var(--m);cursor:pointer;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav a:hover,.pl a:hover,a.on{color:#fff;background:var(--h)}
+.lh{display:flex;justify-content:space-between;align-items:center;margin:18px 0 6px;color:var(--m);font-weight:700}
+h2{font-size:28px;margin:6px 0 14px}h4{margin:14px 0 6px;font-size:13px;color:var(--m);display:flex;justify-content:space-between}
+h4 a{cursor:pointer;color:#fff}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.big{background:var(--g);color:#000;border-radius:30px;padding:10px 22px;font-weight:700;font-size:14px}.big:hover{color:#000;transform:scale(1.04)}
+input[type=text]{width:100%;max-width:420px;background:var(--h);border:0;border-radius:30px;padding:12px 18px;color:#fff;font-size:14px}
+.row{display:grid;grid-template-columns:44px 1fr auto auto;gap:10px;align-items:center;padding:6px;border-radius:6px;cursor:pointer}
+.row:hover{background:var(--h)}.row img{width:44px;height:44px;border-radius:4px;object-fit:cover;background:#333}
+.row b,.row span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row span{color:var(--m);font-size:12px;margin-top:2px}
+.row.now b{color:var(--g)}.row button{opacity:0}.row:hover button,.row button.on{opacity:1}
+.row.q{grid-template-columns:44px 1fr auto}.row.over{outline:1px dashed var(--g)}
+#yt{width:100%;aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden}#yt iframe{width:100%;height:100%}
+#p{grid-area:p;display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;padding:0 10px;gap:12px}
+.np{display:flex;align-items:center;gap:10px;min-width:0}.np img{width:56px;height:56px;border-radius:4px;background:#222;object-fit:cover}
+.np b,.np span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.np span{color:var(--m);font-size:12px}
+.ct{display:flex;flex-direction:column;align-items:center;gap:4px}.ct div{display:flex;align-items:center;gap:6px}
+#pp{background:#fff;color:#000;width:36px;height:36px;font-size:15px;padding:0}#pp:hover{transform:scale(1.07);color:#000}
+.sk{display:flex;gap:8px;align-items:center;width:100%;color:var(--m);font-size:11px}.sk input{flex:1}
+input[type=range]{accent-color:var(--g);height:4px;cursor:pointer}
+.rt{display:flex;justify-content:flex-end;align-items:center;gap:2px}.rt input{width:90px}
+#menu{position:fixed;background:#282828;border-radius:6px;padding:4px;min-width:200px;box-shadow:0 8px 24px #000a;z-index:9;display:none}
+#menu div{padding:9px 12px;border-radius:4px;cursor:pointer}#menu div:hover{background:#3e3e3e}#menu hr{border:0;border-top:1px solid #3e3e3e;margin:4px 0}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:30px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}#toast.on{opacity:1}
+.empty{color:var(--m);padding:20px 4px;line-height:1.6}
+@media(max-width:800px){body{grid-template-columns:1fr;grid-template-areas:"m" "p"}#s,#r{display:none}#p{grid-template-columns:1fr auto}.ct .sk,.rt{display:none}}
+</style></head><body>
+<aside id="s">
+ <div class="logo">MyTunes</div>
+ <div class="nav"><a data-v="home">Home</a><a data-v="search">Search</a><a data-v="liked">Liked Songs</a></div>
+ <div class="lh">Your Library <button id="newpl" title="New playlist">+</button></div>
+ <div class="pl" id="pl"></div>
+</aside>
+<main id="main"></main>
+<aside id="r"><div id="yt"></div><div id="qp"></div></aside>
+<footer id="p">
+ <div class="np"><img id="art" alt=""><div style="min-width:0"><b id="tt">Nothing playing</b><span id="ta"></span></div><button id="plike" title="Like">♥</button></div>
+ <div class="ct">
+  <div><button id="shuf" title="Shuffle">⇄</button><button id="prev" title="Previous">⏮</button><button id="pp" title="Play/Pause">▶</button><button id="next" title="Next">⏭</button><button id="rep" title="Repeat">↻</button></div>
+  <div class="sk"><span id="tc">0:00</span><input type="range" id="sk" min="0" max="100" value="0" step="1"><span id="td">0:00</span></div>
+ </div>
+ <div class="rt"><button id="sleep" title="Sleep timer">☾</button><button id="qbtn" class="on" title="Queue">☰</button><button id="mute" title="Volume">♪</button><input type="range" id="vol" min="0" max="100" value="80"><button id="cfg" title="API key">⚙</button></div>
+</footer>
+<div id="menu"></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D=Object.assign({key:'',liked:[],lists:{},recent:[],vol:80},JSON.parse(localStorage.mytunes||'{}'));
+const save=()=>localStorage.mytunes=JSON.stringify(D);
+const st={ctx:[],ord:[],pos:-1,cn:'',q:[],hist:[],cur:null,shuf:false,rep:0,v:'home',arg:null,res:[],cache:{}};
+let P=null,seeking=false,sleepT=null,sleepI=0,dragQ=-1;
+const fmt=s=>{s=Math.floor(s||0);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const dec=s=>{const e=document.createElement('textarea');e.innerHTML=s;return e.value};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+const liked=t=>D.liked.some(x=>x.id==t.id);
+
+/* ---------- YouTube player ---------- */
+const sc=document.createElement('script');sc.src='https://www.youtube.com/iframe_api';document.head.appendChild(sc);
+window.onYouTubeIframeAPIReady=()=>{P=new YT.Player('yt',{height:'100%',width:'100%',playerVars:{playsinline:1,rel:0,modestbranding:1},events:{
+ onReady:()=>P.setVolume(D.vol),
+ onStateChange:e=>{$('#pp').textContent=e.data==1?'⏸':'▶';if(e.data==0)next(true)},
+ onError:()=>{toast('Cannot play this track, skipping');next(true)}}})};
+setInterval(()=>{if(!P||!P.getDuration)return;const d=P.getDuration()||0,c=P.getCurrentTime()||0;if(!seeking){$('#sk').max=d;$('#sk').value=c}$('#tc').textContent=fmt(c);$('#td').textContent=fmt(d)},400);
+
+/* ---------- playback + queue (Spotify rules: manual queue first, then context) ---------- */
+function mkOrd(keep){const n=st.ctx.length;let o=[...Array(n).keys()];
+ if(st.shuf){for(let i=n-1;i>0;i--){const j=Math.random()*(i+1)|0;[o[i],o[j]]=[o[j],o[i]]}
+  if(keep>=0){o=o.filter(x=>x!=keep);o.unshift(keep)}}
+ st.ord=o;st.pos=keep>=0?o.indexOf(keep):-1}
+function playCtx(list,i,name){st.ctx=list.slice();st.cn=name||'';mkOrd(i);play(st.ctx[i])}
+function play(t,noHist){if(!P||!P.loadVideoById)return toast('Player is still loading…');
+ if(!D.key&&!t)return;if(st.cur&&!noHist)st.hist.push(st.cur);st.cur=t;P.loadVideoById(t.id);
+ D.recent=[t,...D.recent.filter(x=>x.id!=t.id)].slice(0,30);save();ui()}
+function next(auto){if(auto&&st.rep==2&&st.cur){P.seekTo(0);P.playVideo();return}
+ if(st.q.length)return play(st.q.shift());
+ if(!st.ctx.length)return;let p=st.pos+1;
+ if(p>=st.ord.length){if(st.rep==1){mkOrd(-1);p=0}else{if(auto){P.stopVideo();$('#pp').textContent='▶'}return}}
+ st.pos=p;play(st.ctx[st.ord[p]])}
+function prev(){if(!st.cur)return;if(P.getCurrentTime()>3||!st.hist.length)return P.seekTo(0);
+ const t=st.hist.pop();play(t,true);const k=st.ctx.findIndex(x=>x.id==t.id);if(k>=0)st.pos=st.ord.indexOf(k);ui()}
+const addNext=t=>{st.q.unshift(t);renderQ();toast('Playing next')};
+const addQ=t=>{st.q.push(t);renderQ();toast('Added to queue')};
+function toggleLike(t){const i=D.liked.findIndex(x=>x.id==t.id);i<0?D.liked.unshift(t):D.liked.splice(i,1);save();toast(i<0?'Added to Liked Songs':'Removed from Liked Songs');ui();if(st.v=='liked')list()}
+
+/* ---------- UI ---------- */
+function ui(){const t=st.cur;if(t){$('#tt').textContent=t.t;$('#ta').textContent=t.a;$('#art').src=t.th;document.title=t.t+' • MyTunes';
+  if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:t.t,artist:t.a,artwork:[{src:t.th}]})}}
+ $('#plike').className=t&&liked(t)?'on':'';renderQ();list();renderPl()}
+function renderPl(){$('#pl').innerHTML=Object.keys(D.lists).map(n=>`<a data-v="pl" data-n="${esc(n)}" class="${st.v=='pl'&&st.arg==n?'on':''}">${esc(n)}</a>`).join('')||'<div class="empty">No playlists yet.</div>';
+ document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.v==st.v))}
+const cur=()=>st.v=='search'?st.res:st.v=='liked'?D.liked:st.v=='pl'?(D.lists[st.arg]||[]):D.recent;
+const ctxName=()=>st.v=='liked'?'Liked Songs':st.v=='pl'?st.arg:st.v=='search'?'Search results':'Recently played';
+function row(t,i){return `<div class="row${st.cur&&st.cur.id==t.id?' now':''}" data-i="${i}"><img src="${esc(t.th)}" loading="lazy" alt=""><div style="min-width:0"><b>${esc(t.t)}</b><span>${esc(t.a)}</span></div><button data-a="like" class="${liked(t)?'on':''}" title="Like">♥</button><button data-a="more" title="More">⋯</button></div>`}
+function list(){const r=$('#res');if(!r)return;const l=cur();
+ r.innerHTML=l.length?l.map(row).join(''):`<div class="empty">${st.v=='search'?'Type a song or artist and press Enter.':st.v=='liked'?'Tap ♥ on any song to save it here.':st.v=='pl'?'Empty playlist. Use ⋯ on any song → Add to playlist.':'Songs you play will show up here. Start with Search.'}</div>`}
+function view(v,arg){st.v=v;st.arg=arg;let h='';
+ if(v=='home'){const g=new Date().getHours();h=`<h2>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h2>${D.key?'':'<div class="empty">Add your YouTube API key with the ⚙ button (bottom right) to start.</div>'}<h4>Recently played</h4>`}
+ if(v=='search')h=`<h2>Search</h2><div class="bar"><input type="text" id="q" placeholder="What do you want to play?" value="${esc(arg||'')}"></div>`;
+ if(v=='liked')h=`<h2>Liked Songs</h2><div class="bar"><button class="big" data-a="playall">Play</button><button class="big" data-a="shufall" style="background:#fff">Shuffle</button></div>`;
+ if(v=='pl')h=`<h2>${esc(arg)}</h2><div class="bar"><button class="big" data-a="playall">Play</button><button class="big" data-a="shufall" style="background:#fff">Shuffle</button><button data-a="delpl" title="Delete playlist">🗑</button></div>`;
+ $('#main').innerHTML=h+'<div id="res"></div>';list();renderPl();
+ if(v=='search'){const q=$('#q');q.focus();q.onkeydown=e=>{if(e.key=='Enter')search(q.value.trim())}}}
+async function search(q){if(!q)return;if(!D.key){toast('Add your YouTube API key first (⚙)');return cfg()}
+ if(st.cache[q]){st.res=st.cache[q];return list()}$('#res').innerHTML='<div class="empty">Searching…</div>';
+ try{const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=25&q=${encodeURIComponent(q)}&key=${D.key}`);const j=await r.json();
+  if(j.error)throw new Error(j.error.message);
+  st.res=st.cache[q]=j.items.map(i=>({id:i.id.videoId,t:dec(i.snippet.title),a:dec(i.snippet.channelTitle).replace(/ - Topic$/,''),th:(i.snippet.thumbnails.medium||i.snippet.thumbnails.default).url}));list()
+ }catch(e){$('#res').innerHTML=`<div class="empty">Search failed: ${esc(e.message)}</div>`}}
+function renderQ(){const up=[];for(let k=st.pos+1;k<st.ord.length&&up.length<20;k++)up.push([k,st.ctx[st.ord[k]]]);
+ const qr=(t,a,x)=>`<div class="row q${a}" ${x}><img src="${esc(t.th)}" alt=""><div style="min-width:0"><b>${esc(t.t)}</b><span>${esc(t.a)}</span></div>${a.includes('m')?'<button data-a="rm" title="Remove">✕</button>':''}</div>`;
+ $('#qp').innerHTML=(st.cur?`<h4>Now playing</h4>`+qr(st.cur,' now',''):'')
+ +(st.q.length?`<h4>Next in queue <a data-a="clr">Clear queue</a></h4>`+st.q.map((t,i)=>qr(t,' m',`draggable="true" data-q="${i}"`)).join(''):'')
+ +(up.length?`<h4>Next from: ${esc(st.cn)}</h4>`+up.map(([k,t])=>qr(t,'',`data-c="${k}"`)).join(''):'')
+ +(!st.cur?'<div class="empty">Queue is empty. Play a song, or use ⋯ → Add to queue.</div>':'')}
+function menu(e,t){const m=$('#menu'),inPl=st.v=='pl';
+ const items=[['Play next',()=>addNext(t)],['Add to queue',()=>addQ(t)],['hr'],[liked(t)?'Remove from Liked Songs':'Add to Liked Songs',()=>toggleLike(t)],['hr'],
+  ...Object.keys(D.lists).map(n=>['Add to: '+n,()=>{if(!D.lists[n].some(x=>x.id==t.id))D.lists[n].push(t);save();toast('Added to '+n)}])];
+ if(inPl)items.push(['hr'],['Remove from this playlist',()=>{D.lists[st.arg]=D.lists[st.arg].filter(x=>x.id!=t.id);save();list()}]);
+ m.innerHTML=items.map((x,i)=>x[0]=='hr'?'<hr>':`<div data-k="${i}">${esc(x[0])}</div>`).join('');
+ m.style.display='block';m.style.left=Math.min(e.clientX,innerWidth-220)+'px';m.style.top=Math.min(e.clientY,innerHeight-m.offsetHeight-10)+'px';
+ m.onclick=ev=>{const d=ev.target.closest('[data-k]');if(d)items[d.dataset.k][1]();m.style.display='none'}}
+function cfg(){const k=prompt('YouTube Data API v3 key:',D.key);if(k!==null){D.key=k.trim();save();toast('API key saved');if(st.v=='home')view('home')}}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{if(!e.target.closest('#menu')&&!e.target.closest('[data-a=more]'))$('#menu').style.display='none'});
+$('#s').onclick=e=>{const a=e.target.closest('a[data-v]');if(a)view(a.dataset.v,a.dataset.n)};
+$('#newpl').onclick=()=>{const n=(prompt('Playlist name')||'').trim();if(n&&!D.lists[n]){D.lists[n]=[];save();view('pl',n)}};
+$('#main').onclick=e=>{const b=e.target.closest('button'),r=e.target.closest('.row'),a=b&&b.dataset.a;
+ if(a=='playall'||a=='shufall'){const l=cur();if(!l.length)return;st.shuf=a=='shufall';$('#shuf').className=st.shuf?'on':'';return playCtx(l,st.shuf?Math.random()*l.length|0:0,ctxName())}
+ if(a=='delpl'){if(confirm('Delete playlist "'+st.arg+'"?')){delete D.lists[st.arg];save();view('home')}return}
+ if(!r)return;const t=cur()[+r.dataset.i];if(a=='like')return toggleLike(t);if(a=='more')return menu(e,t);playCtx(cur(),+r.dataset.i,ctxName())};
+$('#qp').onclick=e=>{const a=e.target.closest('[data-a]'),r=e.target.closest('.row');
+ if(a&&a.dataset.a=='clr'){st.q=[];return renderQ()}
+ if(a&&a.dataset.a=='rm'){st.q.splice(+r.dataset.q,1);return renderQ()}
+ if(r&&r.dataset.q!==undefined)return play(st.q.splice(+r.dataset.q,1)[0]);
+ if(r&&r.dataset.c!==undefined){st.pos=+r.dataset.c;play(st.ctx[st.ord[st.pos]])}};
+$('#qp').ondragstart=e=>{const r=e.target.closest('[data-q]');if(r)dragQ=+r.dataset.q};
+$('#qp').ondragover=e=>{const r=e.target.closest('[data-q]');if(r&&dragQ>=0){e.preventDefault();document.querySelectorAll('.over').forEach(x=>x.classList.remove('over'));r.classList.add('over')}};
+$('#qp').ondrop=e=>{const r=e.target.closest('[data-q]');if(r&&dragQ>=0){const [t]=st.q.splice(dragQ,1);st.q.splice(+r.dataset.q,0,t)}dragQ=-1;renderQ()};
+$('#pp').onclick=()=>{if(!P||!st.cur)return;P.getPlayerState()==1?P.pauseVideo():P.playVideo()};
+$('#next').onclick=()=>next(false);$('#prev').onclick=prev;
+$('#shuf').onclick=()=>{st.shuf=!st.shuf;$('#shuf').className=st.shuf?'on':'';const k=st.pos>=0?st.ord[st.pos]:-1;mkOrd(k);renderQ()};
+$('#rep').onclick=()=>{st.rep=(st.rep+1)%3;$('#rep').className=st.rep?'on':'';$('#rep').textContent=st.rep==2?'↺1':'↻';toast(['Repeat off','Repeat all','Repeat one'][st.rep])};
+$('#plike').onclick=()=>st.cur&&toggleLike(st.cur);
+$('#sk').oninput=()=>{seeking=true;$('#tc').textContent=fmt($('#sk').value)};
+$('#sk').onchange=()=>{P&&P.seekTo(+$('#sk').value,true);seeking=false};
+$('#vol').value=D.vol;$('#vol').oninput=e=>{D.vol=+e.target.value;P&&P.setVolume(D.vol);save()};
+$('#mute').onclick=()=>{if(!P)return;P.isMuted()?P.unMute():P.mute()};
+$('#qbtn').onclick=()=>{document.body.classList.toggle('nor');$('#qbtn').classList.toggle('on')};
+$('#cfg').onclick=cfg;
+$('#sleep').onclick=()=>{const o=[0,15,30,60];sleepI=(sleepI+1)%4;clearTimeout(sleepT);$('#sleep').className=sleepI?'on':'';
+ if(sleepI){sleepT=setTimeout(()=>{P&&P.pauseVideo();$('#sleep').className='';sleepI=0},o[sleepI]*6e4)}toast(sleepI?`Sleep timer: ${o[sleepI]} min`:'Sleep timer off')};
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName)&&e.target.type!='range')return;
+ if(e.code=='Space'){e.preventDefault();$('#pp').click()}if(e.shiftKey&&e.key=='ArrowRight')next(false);if(e.shiftKey&&e.key=='ArrowLeft')prev()});
+if('mediaSession' in navigator){const m=navigator.mediaSession;m.setActionHandler('nexttrack',()=>next(false));m.setActionHandler('previoustrack',prev);m.setActionHandler('play',()=>P&&P.playVideo());m.setActionHandler('pause',()=>P&&P.pauseVideo())}
+view('home');renderQ();
+</script></body></html>
